@@ -72,6 +72,25 @@ class FieldReportCreate(BaseModel):
     photo_path: str | None = Field(default=None, max_length=500)
 
 
+class FieldInspectionCreate(BaseModel):
+    inspector: str = Field(min_length=1, max_length=200)
+    outcome: str = Field(pattern="^(CONFIRMED_DISASTER|FALSE_ALARM)$")
+    findings: str = Field(min_length=1, max_length=5000)
+    follow_up_action: str = Field(min_length=1, max_length=5000)
+
+
+class FieldInspectionResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID
+    report_id: UUID
+    inspector: str
+    outcome: str
+    findings: str
+    follow_up_action: str
+    inspected_at: datetime
+
+
 class FieldReportResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -81,6 +100,7 @@ class FieldReportResponse(BaseModel):
     reporter_type: str
     photo_path: str | None
     reported_at: datetime
+    inspection: FieldInspectionResponse | None = None
 
 
 class FieldReportListResponse(BaseModel):

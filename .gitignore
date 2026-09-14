@@ -4,4 +4,3 @@ __pycache__/
 **/__pycache__/
 .pytest_cache/
 **/.pytest_cache/
-gateway/node_modules/

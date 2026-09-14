@@ -7,12 +7,13 @@ from app.models import (
     Alert,
     AlertStatus,
     FieldReport,
+    FieldInspection,
     Incident,
     IncidentEvent,
     IncidentStatus,
     Priority,
 )
-from app.schemas.operations import FieldReportCreate
+from app.schemas.operations import FieldInspectionCreate, FieldReportCreate
 
 
 def list_alerts(db: Session) -> list[Alert]:
@@ -111,6 +112,56 @@ def list_field_reports(db: Session) -> list[FieldReport]:
 def create_field_report(db: Session, report: FieldReportCreate) -> FieldReport:
     item = FieldReport(**report.model_dump())
     db.add(item)
+    db.add(Alert(
+        location_id=report.location_id,
+        severity="HIGH",
+        hazard="LANDSLIDE",
+        reason="FIELD_REPORT_REQUIRES_INSPECTION",
+        action="SDMA inspection required before response decision",
+    ))
     db.commit()
     db.refresh(item)
     return item
+
+
+def inspect_field_report(
+    db: Session, report: FieldReport, payload: FieldInspectionCreate
+) -> FieldInspection:
+    inspection = report.inspection
+    if inspection is None:
+        inspection = FieldInspection(report_id=report.id)
+        db.add(inspection)
+    inspection.inspector = payload.inspector
+    inspection.outcome = payload.outcome
+    inspection.findings = payload.findings
+    inspection.follow_up_action = payload.follow_up_action
+
+    incident = db.scalar(
+        select(Incident).where(Incident.location_id == report.location_id)
+        .order_by(Incident.created_at.desc())
+    )
+    if incident is None:
+        incident = Incident(
+            location_id=report.location_id,
+            priority=Priority.P1 if payload.outcome == "CONFIRMED_DISASTER" else Priority.P3,
+            status=IncidentStatus.VERIFIED if payload.outcome == "CONFIRMED_DISASTER" else IncidentStatus.RESOLVED,
+            summary=f"SDMA inspection for field report {report.id}",
+        )
+        db.add(incident)
+        db.flush()
+    else:
+        incident.status = (
+            IncidentStatus.VERIFIED
+            if payload.outcome == "CONFIRMED_DISASTER"
+            else IncidentStatus.RESOLVED
+        )
+        if payload.outcome == "CONFIRMED_DISASTER":
+            incident.priority = Priority.P1
+    db.add(IncidentEvent(
+        incident_id=incident.id,
+        status=incident.status,
+        note=f"{payload.outcome}: {payload.findings}. Follow-up: {payload.follow_up_action}",
+    ))
+    db.commit()
+    db.refresh(inspection)
+    return inspection

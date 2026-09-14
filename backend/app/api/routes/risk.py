@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
 from app.db.session import get_db
@@ -6,8 +6,24 @@ from app.schemas.common import Priority
 from app.schemas.risk import ImpactSummary, RiskResponse
 from app.services.impact import get_impact
 from app.services.risk import get_location_risk
+from app.schemas.risk_grid import RiskGridResponse
+from app.services.risk_grid import get_risk_grid
 
 router = APIRouter(tags=["risk"])
+
+
+@router.get("/risk/grid", response_model=RiskGridResponse)
+def get_grid(
+    location: str | None = Query(default=None, max_length=200),
+    db: Session = Depends(get_db),
+) -> RiskGridResponse:
+    result = get_risk_grid(db, location)
+    if result is None:
+        raise HTTPException(
+            status_code=404,
+            detail={"code": "LOCATION_NOT_FOUND", "message": "The requested location does not exist."},
+        )
+    return result
 
 
 @router.get("/risk/{location_id}", response_model=RiskResponse)
@@ -21,9 +37,17 @@ def get_risk(location_id: str, db: Session = Depends(get_db)) -> RiskResponse:
 
     location, assessment = result
     if assessment is None:
-        raise HTTPException(
-            status_code=404,
-            detail={"code": "RISK_NOT_AVAILABLE", "message": "No risk assessment is available for this location."},
+        return RiskResponse(
+            location={
+                "id": location.id,
+                "name": location.name,
+                "latitude": location.latitude,
+                "longitude": location.longitude,
+            },
+            risk={"score": 0, "level": "UNKNOWN", "trend": "UNKNOWN"},
+            factors=[],
+            impact=ImpactSummary(),
+            priority=Priority.P4,
         )
 
     impact = get_impact(db, location_id)

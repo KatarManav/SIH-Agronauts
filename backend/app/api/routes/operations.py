@@ -11,16 +11,20 @@ from app.schemas.operations import (
     AssignmentRequest,
     EscalationRequest,
     FieldReportCreate,
+    FieldInspectionCreate,
+    FieldInspectionResponse,
     FieldReportListResponse,
     FieldReportResponse,
     IncidentListResponse,
     IncidentResponse,
     IncidentTimelineResponse,
 )
+from app.models import FieldReport
 from app.services.operations import (
     acknowledge_alert,
     assign_alert,
     create_field_report,
+    inspect_field_report,
     escalate_alert,
     get_alert,
     get_incident,
@@ -109,3 +113,19 @@ def get_field_reports(db: Session = Depends(get_db)) -> FieldReportListResponse:
 )
 def post_field_report(payload: FieldReportCreate, db: Session = Depends(get_db)) -> FieldReportResponse:
     return create_field_report(db, payload)
+
+
+@router.post(
+    "/field-reports/{report_id}/inspect",
+    response_model=FieldInspectionResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+def inspect_report(
+    report_id: UUID,
+    payload: FieldInspectionCreate,
+    db: Session = Depends(get_db),
+) -> FieldInspectionResponse:
+    report = db.get(FieldReport, report_id)
+    if report is None:
+        raise not_found("FIELD_REPORT_NOT_FOUND", "The requested field report does not exist.")
+    return inspect_field_report(db, report, payload)

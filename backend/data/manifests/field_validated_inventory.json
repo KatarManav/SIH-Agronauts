@@ -1,0 +1,45 @@
+{
+  "source_file": "data\\raw\\landslide_report.csv",
+  "retrieved_at": "2026-09-11T21:07:28.375995+00:00",
+  "records": 36145,
+  "records_with_valid_coordinates": 35914,
+  "records_with_event_date": 2837,
+  "state_counts": {
+    "Assam": 854,
+    "UNKNOWN": 2832,
+    "GOA": 3,
+    "Arunachal Pradesh": 1223,
+    "Andhra Pradesh": 29,
+    "Himachal Pradesh": 6607,
+    "Karnataka": 1467,
+    "KARNATAKA": 83,
+    "Kerala": 2999,
+    "KERALA": 381,
+    "Goa": 68,
+    "Maharashtra": 1502,
+    "Manipur": 1631,
+    "Meghalaya": 1051,
+    "MEGHALAYA": 1,
+    "Mizoram": 3487,
+    "Madhya Pradesh": 1,
+    "Nagaland": 1902,
+    "Rajasthan": 1,
+    "Punjab": 3,
+    "Sikkim": 777,
+    "Tripura": 97,
+    "Tamil Nadu": 1361,
+    "Tamil nadu": 1,
+    "West Bengal": 2261,
+    "Uttarakhand": 5523
+  },
+  "outputs": [
+    "data\\interim\\field_validated_inventory.csv",
+    "data\\interim\\field_validated_dated_events.csv"
+  ],
+  "limitations": [
+    "The source is a fixed-width text export with continuation lines.",
+    "Only dates explicitly present in a record or continuation line are extracted.",
+    "Undated records are spatial inventory evidence, not time-specific labels.",
+    "Raw record text is retained for manual review."
+  ]
+}

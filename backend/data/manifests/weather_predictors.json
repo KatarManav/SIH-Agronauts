@@ -1,0 +1,31 @@
+{
+  "source": "Open-Meteo archive / ERA5-Land",
+  "api_url": "https://archive-api.open-meteo.com/v1/archive",
+  "retrieved_at": "2026-09-12T01:30:32.655946+00:00",
+  "input_events": 1351,
+  "output_rows": 40440,
+  "failed_events": [
+    {
+      "event_id": "MN/UKH/83L01/2018/48",
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    {
+      "event_id": "MN/TAM/83H05/2018/1",
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    {
+      "event_id": "MIZ/AZL/2022/53",
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    }
+  ],
+  "lookback_days": 30,
+  "variables": {
+    "rainfall_mm": "daily precipitation sum in millimetres",
+    "soil_moisture_ratio": "0-7 cm volumetric soil water fraction"
+  },
+  "limitations": [
+    "ERA5-Land is reanalysis, not direct satellite measurement.",
+    "The output is incomplete until slope and susceptibility are joined.",
+    "Event-day and future values are excluded to reduce label leakage."
+  ]
+}

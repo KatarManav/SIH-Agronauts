@@ -13,6 +13,7 @@ class APIErrorResponse(BaseModel):
 
 
 class RiskLevel(str, Enum):
+    UNKNOWN = "UNKNOWN"
     LOW = "LOW"
     MODERATE = "MODERATE"
     HIGH = "HIGH"
@@ -20,6 +21,7 @@ class RiskLevel(str, Enum):
 
 
 class RiskTrend(str, Enum):
+    UNKNOWN = "UNKNOWN"
     STABLE = "STABLE"
     RISING = "RISING"
     FALLING = "FALLING"

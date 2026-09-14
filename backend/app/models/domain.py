@@ -183,6 +183,27 @@ class FieldReport(Base):
     reported_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
+    inspection: Mapped["FieldInspection | None"] = relationship(
+        back_populates="report", cascade="all, delete-orphan", uselist=False
+    )
+
+
+class FieldInspection(Base):
+    __tablename__ = "field_inspections"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    report_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("field_reports.id"), nullable=False, unique=True, index=True
+    )
+    inspector: Mapped[str] = mapped_column(String(200), nullable=False)
+    outcome: Mapped[str] = mapped_column(String(32), nullable=False, default="PENDING")
+    findings: Mapped[str] = mapped_column(Text, nullable=False)
+    follow_up_action: Mapped[str] = mapped_column(Text, nullable=False)
+    inspected_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+
+    report: Mapped[FieldReport] = relationship(back_populates="inspection")
 
 
 class EnvironmentalObservation(Base):

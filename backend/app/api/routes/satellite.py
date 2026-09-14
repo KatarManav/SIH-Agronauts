@@ -6,8 +6,9 @@ from app.schemas.satellite import (
     SatelliteObservationCreate,
     SatelliteObservationListResponse,
     SatelliteObservationResponse,
+    SatelliteDetectionListResponse,
 )
-from app.services.satellite import create_satellite_observation, list_satellite_observations
+from app.services.satellite import create_satellite_observation, get_satellite_detections, list_satellite_observations
 
 router = APIRouter(prefix="/satellite", tags=["satellite-evidence"])
 
@@ -39,4 +40,23 @@ def get_satellite_observations(
 ) -> SatelliteObservationListResponse:
     return SatelliteObservationListResponse(
         observations=list_satellite_observations(db, location_id)
+    )
+
+
+@router.get("/{location_id}", response_model=SatelliteDetectionListResponse)
+def get_satellite_detections_by_location(
+    location_id: str, db: Session = Depends(get_db)
+) -> SatelliteDetectionListResponse:
+    location, detections = get_satellite_detections(db, location_id)
+    if location is None:
+        raise HTTPException(
+            status_code=404,
+            detail={"code": "LOCATION_NOT_FOUND", "message": "The requested location does not exist."},
+        )
+    simulated = any(item["is_simulated"] for item in detections)
+    return SatelliteDetectionListResponse(
+        location={"id": location.id, "name": location.name},
+        detections=detections,
+        data_status="DEMO" if simulated else "LIVE",
+        is_simulated=simulated,
     )

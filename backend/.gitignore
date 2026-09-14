@@ -5,3 +5,7 @@ __pycache__/
 *.py[cod]
 coverage.xml
 .coverage
+artifacts/
+data/raw/
+data/interim/
+data/raw/gis/

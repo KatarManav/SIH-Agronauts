@@ -8,7 +8,9 @@ from app.core.config import get_settings
 engine = create_engine(
     get_settings().database_url,
     pool_pre_ping=True,
-    connect_args={"prepare_threshold": 0},
+    # Supabase's pooler can route a session to a different PostgreSQL backend.
+    # Disable psycopg server-side prepared statements for pooler compatibility.
+    connect_args={"prepare_threshold": None},
 )
 SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)
 

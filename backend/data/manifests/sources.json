@@ -1,0 +1,54 @@
+{
+  "sources": [
+    {
+      "name": "NASA Global Landslide Catalog",
+      "role": "event_labels",
+      "url": "https://catalog.data.gov/dataset/global-landslide-catalog-export",
+      "service_url": "https://maps.nccs.nasa.gov/server/rest/services/global_landslide_catalog/glc_viewer_service/FeatureServer",
+      "status": "collector_added",
+      "limitations": "Reported rainfall-triggered events; one-time public export current to 2016-03-07."
+    },
+    {
+      "name": "NASA GPM IMERG",
+      "role": "rainfall_predictor",
+      "url": "https://gpm.nasa.gov/data/directory",
+      "status": "planned",
+      "limitations": "Requires product selection and Earthdata access; use observations available before each label time."
+    },
+    {
+      "name": "Open-Meteo ERA5-Land archive",
+      "role": "public_weather_fallback",
+      "url": "https://open-meteo.com/en/docs/historical-weather-api",
+      "status": "collector_added",
+      "limitations": "Public reanalysis fallback; not a direct satellite observation. Rows must remain labeled with this provenance."
+    },
+    {
+      "name": "NASADEM or SRTM",
+      "role": "terrain_predictor",
+      "url": "https://lpdaac.usgs.gov/products/nasadem_hgtv001/",
+      "status": "planned",
+      "limitations": "Static terrain data; derive slope consistently for all samples."
+    },
+    {
+      "name": "NASA SMAP or ERA5-Land",
+      "role": "soil_wetness_predictor",
+      "url": "https://nsidc.org/data/spl3smp/versions/9",
+      "status": "planned",
+      "limitations": "Mountain retrieval gaps and temporal availability must be quality-filtered."
+    },
+    {
+      "name": "NASA LHASA",
+      "role": "benchmark_or_feature",
+      "url": "https://gpm.nasa.gov/applications/landslides",
+      "status": "planned",
+      "limitations": "Benchmark/feature only; never use its output as independent ground truth."
+    },
+    {
+      "name": "GSI National Geoscience Data Repository",
+      "role": "official_susceptibility_predictor",
+      "url": "https://geodataindia.gov.in/guestuser",
+      "status": "authenticated_download_required",
+      "limitations": "Use the official NGDR export and retain its CRS, class dictionary, version, and permission metadata."
+    }
+  ]
+}

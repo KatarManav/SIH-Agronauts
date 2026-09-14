@@ -1,0 +1,18 @@
+import { apiClient } from './client'
+
+export const getHealth = () => apiClient.get('/api/health')
+export const getLocations = () => apiClient.get('/api/locations')
+export const getRisk = (id) => apiClient.get(`/api/risk/${id}`)
+export const getImpact = (id) => apiClient.get(`/api/impact/${id}`)
+export const getAlerts = () => apiClient.get('/api/alerts')
+export const acknowledgeAlert = (id, acknowledgedBy) => apiClient.post(`/api/alerts/${id}/acknowledge`, { acknowledged_by: acknowledgedBy })
+export const assignAlert = (id, assignedTo) => apiClient.post(`/api/alerts/${id}/assign`, { assigned_to: assignedTo })
+export const escalateAlert = (id, reason) => apiClient.post(`/api/alerts/${id}/escalate`, { reason })
+export const getIncidents = () => apiClient.get('/api/incidents')
+export const getPriority = () => apiClient.get('/api/priority')
+export const getRiskZones = () => apiClient.get('/api/map/risk-zones')
+export const getObservations = (id) => apiClient.get(`/api/ingestion/observations?location_id=${encodeURIComponent(id)}`)
+export const getSatelliteObservations = (id) => apiClient.get(`/api/satellite/observations?location_id=${encodeURIComponent(id)}`)
+export const getFieldReports = () => apiClient.get('/api/field-reports')
+export const submitFieldReport = (body) => apiClient.post('/api/field-reports', body)
+export const inspectFieldReport = (id, body) => apiClient.post(`/api/field-reports/${id}/inspect`, body)

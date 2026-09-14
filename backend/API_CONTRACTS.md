@@ -1,12 +1,14 @@
 # Frontend API contracts
 
-Set the frontend base URL once:
+For the current local setup, set the frontend base URL once:
 
 ```env
-VITE_API_BASE_URL=https://<deployed-backend-host>
+VITE_API_BASE_URL=http://localhost:8000
 ```
 
-The frontend should keep response handling in an API client so mock data can be replaced without changing components.
+The frontend calls FastAPI directly during local development. Keep response
+handling in an API client so the base URL can be changed without changing
+components.
 
 ## Read endpoints
 
@@ -18,12 +20,20 @@ The frontend should keep response handling in an API client so mock data can be 
 | Exposed assets | `GET /api/impact/{location_id}?radius_km=25` |
 | Response queue | `GET /api/priority` |
 | Risk map | `GET /api/map/risk-zones` |
+| H3 risk grid | `GET /api/risk/grid?location=East%20Kameng` |
+| Satellite detections | `GET /api/satellite/{location_id}` |
+
+H3 grid cells and `/api/map/risk-zones` now include `satelliteEvidence`.
+Satellite evidence is attached to the H3 cell for the associated location and
+includes coordinates, detection type, timestamp, data status, and whether the
+record is simulated. A change signal is not a confirmed landslide.
 | Alerts | `GET /api/alerts` |
 | Incident list | `GET /api/incidents` |
 | Incident timeline | `GET /api/incidents/{incident_id}/timeline` |
 | Field reports | `GET /api/field-reports` |
 | Environmental observations | `GET /api/ingestion/observations?location_id=...` |
 | Satellite evidence | `GET /api/satellite/observations?location_id=...` |
+| Risk history | `GET /api/trends/{location_id}` |
 
 Satellite evidence can be submitted through:
 
@@ -35,6 +45,24 @@ The request records acquisition time, processing quality, change detection,
 evidence metadata, and demo provenance. Platforms whose names start with
 `DEMO` must set `is_demo` to `true`. The response includes `freshness_hours`;
 this is evidence freshness, not a live prediction.
+
+Risk history returns up to the latest 100 persisted assessments in
+chronological order:
+
+```json
+{
+  "location_id": "DEMO-EAST-KAMENG",
+  "points": [
+    {
+      "assessed_at": "2026-09-11T12:00:00Z",
+      "score": 87,
+      "level": "CRITICAL",
+      "trend": "RISING"
+    }
+  ],
+  "data_provenance": "Backend risk assessment history; demo records are labeled by location."
+}
+```
 
 ## Risk response
 

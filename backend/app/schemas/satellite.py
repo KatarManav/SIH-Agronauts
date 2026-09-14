@@ -29,7 +29,21 @@ class SatelliteObservationResponse(BaseModel):
     evidence: dict[str, float | str | bool | None]
     is_demo: bool
     freshness_hours: float = Field(ge=0)
+    latitude: float
+    longitude: float
+    detection_type: str
+    confidence: float | None = Field(default=None, ge=0, le=100)
+    detected_at: datetime
+    data_status: str
+    is_simulated: bool
 
 
 class SatelliteObservationListResponse(BaseModel):
     observations: list[SatelliteObservationResponse]
+
+
+class SatelliteDetectionListResponse(BaseModel):
+    location: dict[str, str]
+    detections: list[SatelliteObservationResponse]
+    data_status: str
+    is_simulated: bool

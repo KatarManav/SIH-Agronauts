@@ -101,9 +101,22 @@ The pilot GIS endpoints are:
 GET /api/impact/{location_id}?radius_km=25
 GET /api/priority
 GET /api/map/risk-zones
+GET /api/risk/grid?location=East%20Kameng
+GET /api/satellite/{location_id}
 ```
 
 They report infrastructure as **potentially exposed**, not certain to fail. Current seeded assets are explicitly demo records; replace them with verified road, village, bridge, and critical-asset datasets before making real-world claims.
+
+`/api/risk/grid` converts each persisted risk coordinate into a valid H3 cell
+using `H3_RESOLUTION` (default `7`). Multiple assessments for a location use
+the latest assessment; the returned cell includes its boundary, risk factors,
+trend, priority, infrastructure counts, and demo/live status. The satellite
+detection route adds coordinates derived from the associated location and
+returns `data_status` and `is_simulated` without claiming demo evidence is live.
+
+Risk cells and map zones also include satellite evidence for the same location,
+so the frontend can render the H3 polygon and its satellite detection marker
+as one combined operational layer.
 
 ## Supabase setup verification
 
@@ -115,15 +128,13 @@ python -c "from app.core.config import get_settings; from sqlalchemy import crea
 
 The command should print `1`. If configuration fails with a PostgreSQL URI error, the Supabase project URL was entered instead of the database connection URI.
 
-## Node.js gateway
-
-The repository also contains a separate `gateway/` Express service. The frontend should call the gateway, not FastAPI directly:
+## Frontend integration
 
 ```text
-React → http://localhost:3000 → FastAPI http://localhost:8000
+React → FastAPI http://localhost:8000
 ```
 
-Start FastAPI first, then configure and start the gateway from `gateway/`. See `gateway/README.md`.
+The frontend calls FastAPI directly during local development.
 
 ## Frontend integration smoke test
 
